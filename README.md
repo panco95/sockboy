@@ -4,7 +4,7 @@ Run:<br>
 1.unzip<br>
 2.run sockboy.exe<br><br>
 
-Aockboy：一款websocket测试工具<br>
+Sockboy：一款websocket测试工具<br>
 windows压缩包下载：/build/sockboy-win32-x64-v1.0.zip<br>
 启动：<br>
 1、解压缩<br>
