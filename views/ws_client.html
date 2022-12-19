@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sockboy</title>
+</head>
+
+<style>
+    textarea {
+        resize: none;
+    }
+</style>
+
+<body style="background: white;">
+    <div id="app" style="width: 90%;margin: 0 auto;">
+        protocol:
+        <select>
+            <option>Websocket</option>
+        </select>&nbsp;
+        address:<input type="text" v-model="address">
+        <button @click="connectServer">connect</button>
+        <button @click="disconnectServer">disconnect</button><br><br>
+        send messages:
+        <textarea style="width: 100%;height: 180px;" v-model="sendText"></textarea>
+        <button @click="sendMeesage">send</button><br><br>
+        receive messages:
+        <textarea style="width: 100%;height: 180px;">{{receive}}</textarea>
+    </div>
+
+    <script src="../libs/vue.js"></script>
+    <script src="../libs/coco-message.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                ws: null,
+                address: "ws://127.0.0.1:7000",
+                sendText: "",
+                receive: ""
+            },
+            methods: {
+                connectServer: function () {
+                    if (this.address.length < 10) {
+                        cocoMessage.info(1000, "Unsupport network address!");
+                        return;
+                    }
+                    if (this.ws != null) {
+                        cocoMessage.info(1000, "Please disconnect first!");
+                        return;
+                    }
+                    this.ws = new WebSocket(this.address);
+                    this.ws.onopen = function () {
+                        cocoMessage.success(1000, "Connect success!");
+                    };
+                    this.ws.onmessage = function (msg) {
+                        app.receive += msg.data + "\n";
+                    };
+                    this.ws.onclose = function () {
+                        cocoMessage.info(1000, "Connection closed!");
+                        app.ws = null;
+                    };
+                    this.ws.onerror = function () {
+                        cocoMessage.info(1000, "Connection error!");
+                        app.ws = null;
+                    }
+                },
+                disconnectServer: function () {
+                    this.ws.close();
+                    this.ws = null;
+                },
+                sendMeesage: function () {
+                    if (this.ws == null) {
+                        cocoMessage.info(1000, "Please connect first!");
+                        return;
+                    }
+                    if (this.sendText.length < 1) {
+                        cocoMessage.info(1000, "please input message to send!");
+                        return;
+                    }
+                    this.ws.send(this.sendText);
+                    app.sendText = "";
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
